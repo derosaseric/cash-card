@@ -6,7 +6,7 @@ Welcome to the Family Cash Card application! This project aims to provide a mode
 
 ## Project Description
 
-The Family Cash Card application is designed to give parents ease and control over managing funds for their children. Throughout this project, you will develop a complete RESTful API using Spring Boot. The key functionalities of the application include:
+The Family Cash Card application is designed to give parents ease and control over managing funds for their children. This project includes a complete RESTful API developed using Spring Boot. The key functionalities of the application include:
 
 - Creating a cash card in a database.
 - Editing, deleting, and viewing multiple cash cards.
@@ -21,16 +21,15 @@ The Family Cash Card application is designed to give parents ease and control ov
 - **Spring Data**: For database connectivity and ORM
 - **Spring Security**: For implementing security features
 
-## Key Learning Objectives
+## Learning Objectives
 
-By working on this project, you will build a solid foundation in Spring Boot, allowing you to apply these skills to real-world projects. You will:
+Throughout the development of this project, the following key objectives were achieved:
 
-- Utilize Spring Boot to build a complete RESTful API, understanding the benefits and tradeoffs of REST.
-- Understand what Spring Boot offers to application developers and how it differs from the Spring Framework.
-- Build web applications with Spring Web.
-- Use Spring Data to connect databases and map relational data to Java objects.
-- Implement Spring Security to develop software with a Security First approach.
-
+- Utilizing Spring Boot to build a complete RESTful API, understanding the benefits and tradeoffs of REST.
+- Understanding what Spring Boot offers to application developers and how it differs from the Spring Framework.
+- Building web applications with Spring Web.
+- Using Spring Data to connect databases and map relational data to Java objects.
+- Implementing Spring Security to develop software with a Security First approach.
 
 ## Getting Started
 
