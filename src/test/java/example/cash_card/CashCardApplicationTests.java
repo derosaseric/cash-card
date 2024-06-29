@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import java.net.URI;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -57,5 +58,30 @@ class CashCardApplicationTests {
 
 		// Verify that the response body is blank
 		assertThat(response.getBody()).isBlank();
+	}
+
+	@Test
+	void shouldCreateANewCashCard() {
+		CashCard newCashCard = new CashCard(null, 250.00);
+
+		// Send a POST request to create the new CashCard and store the response
+		ResponseEntity<Void> createResponse = restTemplate.postForEntity("/cashcards", newCashCard, Void.class);
+		assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+		// Retrieve the location of the newly created CashCard
+		URI locationOfNewCashCard = createResponse.getHeaders().getLocation();
+
+		// Send a GET request to the location of the newly created CashCard and store the response
+		ResponseEntity<String> getResponse = restTemplate.getForEntity(locationOfNewCashCard, String.class);
+		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
+
+		// Extract and verify thr fields in the JSON response
+		Number id = documentContext.read("$.id");
+		assertThat(id).isNotNull();
+
+		Double amount = documentContext.read("$.amount");
+		assertThat(amount).isEqualTo(250.00);
 	}
 }
