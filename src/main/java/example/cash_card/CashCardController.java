@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 /**
  * REST controller for managing cash cards.
  * Provides an endpoint to retrieve cash cards details by ID.
@@ -13,6 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/cashcards")
 public class CashCardController {
+
+    private final CashCardRepository cashCardRepository;
+
+    /**
+     * Constructs a new CashCardController with the specified repository.
+     *
+     * @param cashCardRepository the repository used to manage cash cards
+     */
+    private CashCardController(CashCardRepository cashCardRepository) {
+        this.cashCardRepository = cashCardRepository;
+    }
 
     /**
      * Handles GET requests to retrieve cash card by its ID.
@@ -23,13 +36,11 @@ public class CashCardController {
     @GetMapping("/{requestedId}")
     private ResponseEntity<CashCard> findById(@PathVariable Long requestedId) {
 
-        // Check if the requested ID matches the predefined cash card ID
-        if (requestedId.equals(99L)) {
-            // Create a cash card with the predefined ID and amount
-            CashCard cashCard = new CashCard(99L, 123.45);
+        Optional<CashCard> cashCardOptional = cashCardRepository.findById(requestedId);
 
-            // Return the cash card wrapped in a 200 OK response
-            return ResponseEntity.ok(cashCard);
+        if (cashCardOptional.isPresent()) {
+            // Return the found CashCard with a 200 OK status
+            return ResponseEntity.ok(cashCardOptional.get());
         }
         else {
             // Return a 404 Not Found response if the cash card is not found
