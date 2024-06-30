@@ -30,9 +30,9 @@ public class CashCardJsonTest {
     void setUp() {
         // Initialize an array of CashCard objects for testing
         cashCards = Arrays.array(
-                new CashCard(99L, 123.45),
-                new CashCard(100L, 1.00),
-                new CashCard(101L, 150.00)
+                new CashCard(99L, 123.45, "sarah1"),
+                new CashCard(100L, 1.00, "sarah1"),
+                new CashCard(101L, 150.00, "sarah1")
         );
     }
 
@@ -45,7 +45,7 @@ public class CashCardJsonTest {
     @Test
     void cashCardSerializationTest() throws IOException {
         // Create a CashCard object with specific values
-        CashCard cashCard = new CashCard(99L, 123.45);
+        CashCard cashCard = cashCards[0];
 
         // Assert that the serialized JSON matches the expected JSON file
         assertThat(json.write(cashCard)).isStrictlyEqualToJson("single.json");
@@ -71,12 +71,13 @@ public class CashCardJsonTest {
         String expectedJson = """
                 {
                     "id": "99",
-                    "amount": "123.45"
+                    "amount": "123.45",
+                    "owner": "sarah1"
                 }
                 """;
 
         // Assert that the deserialized CashCard object matches the expected values
-        assertThat(json.parse(expectedJson)).isEqualTo(new CashCard(99L, 123.45));
+        assertThat(json.parse(expectedJson)).isEqualTo(new CashCard(99L, 123.45, "sarah1"));
         assertThat(json.parseObject(expectedJson).id()).isEqualTo(99);
         assertThat(json.parseObject(expectedJson).amount()).isEqualTo(123.45);
     }
@@ -104,9 +105,9 @@ public class CashCardJsonTest {
         // Define a JSON string representing a list of CashCard objects
         String expected= """
                 [
-                    { "id": 99, "amount": 123.45},
-                    { "id": 100, "amount": 1.00},
-                    { "id": 101, "amount": 150.00}
+                    { "id": 99, "amount": 123.45, "owner": "sarah1"},
+                    { "id": 100, "amount": 1.00, "owner": "sarah1"},
+                    { "id": 101, "amount": 150.00, "owner": "sarah1"}
                 ]
                 """;
 
