@@ -8,8 +8,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -69,5 +74,23 @@ public class CashCardController {
             // Return a 404 Not Found response if the cash card is not found
             return ResponseEntity.notFound().build();
         }
+    }
+
+    /**
+     * Handles GET requests to retrieve all cash cards with pagination and sorting.
+     *
+     * @param pageable the pagination and sorting information
+     * @return ResponseEntity containing a list of cash cards
+     */
+    @GetMapping
+    private ResponseEntity<List<CashCard>> findAll(Pageable pageable) {
+        Page<CashCard> page = cashCardRepository.findAll(
+                PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    pageable.getSortOr(Sort.by(Sort.Direction.ASC, "amount"))
+            ));
+
+        return ResponseEntity.ok(page.getContent());
     }
 }
