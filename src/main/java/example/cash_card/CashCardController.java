@@ -1,12 +1,7 @@
 package example.cash_card;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,11 +10,10 @@ import org.springframework.data.domain.Sort;
 import java.security.Principal;
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * REST controller for managing cash cards.
- * Provides an endpoint to create, retrieve by ID, and list cash cards.
+ * Provides an endpoint to create, retrieve by ID, update, and list cash cards.
  */
 @RestController
 @RequestMapping("/cashcards")
@@ -34,6 +28,17 @@ public class CashCardController {
      */
     private CashCardController(CashCardRepository cashCardRepository) {
         this.cashCardRepository = cashCardRepository;
+    }
+
+    /**
+     * Retrieves a cash card by its ID and ensures it belongs to the authenticated user.
+     *
+     * @param requestedId the ID of the requested cash card
+     * @param principal the authenticated user's principal
+     * @return the CashCard if found, otherwise null
+     */
+    private CashCard findCashCard(Long requestedId, Principal principal) {
+        return cashCardRepository.findByIdAndOwner(requestedId, principal.getName());
     }
 
     /**
@@ -69,12 +74,11 @@ public class CashCardController {
      */
     @GetMapping("/{requestedId}")
     private ResponseEntity<CashCard> findById(@PathVariable Long requestedId, Principal principal) {
+        CashCard cashCard = findCashCard(requestedId, principal);
 
-        Optional<CashCard> cashCardOptional = Optional.ofNullable(cashCardRepository.findByIdAndOwner(requestedId, principal.getName()));
-
-        if (cashCardOptional.isPresent()) {
+        if (cashCard != null) {
             // Return the found CashCard with a 200 OK status
-            return ResponseEntity.ok(cashCardOptional.get());
+            return ResponseEntity.ok(cashCard);
         }
         else {
             // Return a 404 Not Found response if the cash card is not found
@@ -100,5 +104,27 @@ public class CashCardController {
             ));
 
         return ResponseEntity.ok(page.getContent());
+    }
+
+    /**
+     * Handles PUT requests to update an existing cash card.
+     * Ensures the updated cash card belongs to the authenticated user.
+     *
+     * @param requestedId the ID of the cash card to update
+     * @param cashCardUpdate the updated details of the cash card
+     * @param principal the authenticated user's principal
+     * @return ResponseEntity with no content if the update is successful, or a 404 Not Found status if not found
+     */
+    @PutMapping("/{requestedId}")
+    private ResponseEntity<Void> putCashCard(@PathVariable Long requestedId, @RequestBody CashCard cashCardUpdate, Principal principal) {
+        CashCard cashCard = findCashCard(requestedId, principal);
+
+        if (cashCard != null) {
+            CashCard updatedCashCard = new CashCard(cashCard.id(), cashCardUpdate.amount(), principal.getName());
+            cashCardRepository.save(updatedCashCard);
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.notFound().build();
     }
 }
