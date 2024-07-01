@@ -10,11 +10,12 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 
 import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.annotation.DirtiesContext.*;
 
 /**
  * Integration tests for the CashCard application.
@@ -227,6 +228,73 @@ class CashCardApplicationTests {
 				.withBasicAuth("sarah1", "abc123")
 				.getForEntity("/cashcards/102", String.class);
 
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	/**
+	 * Test to verify that an existing CashCard can be updated.
+	 */
+	@Test
+	@DirtiesContext
+	void shouldUpdateAnExistingCashCard() {
+		CashCard cashCardUpdate = new CashCard(null, 19.99, null);
+
+		// Send a PUT request to update the CashCard and store the response
+		HttpEntity<CashCard> request = new HttpEntity<>(cashCardUpdate);
+		ResponseEntity<Void> response = restTemplate
+				.withBasicAuth("sarah1", "abc123")
+				.exchange("/cashcards/99", HttpMethod.PUT, request, Void.class);
+
+		// Verify that the HTTP status code is 204 No Content
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+		// Send a GET request to retrieve the updated CashCard and store the response
+		ResponseEntity<String> getResponse = restTemplate
+				.withBasicAuth("sarah1", "abc123")
+				.getForEntity("/cashcards/99", String.class);
+
+		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
+		Number id = documentContext.read("$.id");
+		Double amount = documentContext.read("$.amount");
+
+		// Verify that the 'id' and 'amount' fields are correct
+		assertThat(id).isEqualTo(99);
+		assertThat(amount).isEqualTo(19.99);
+	}
+
+	/**
+	 * Test to verify that an unknown CashCard cannot be updated.
+	 */
+	@Test
+	void shouldNotUpdateACashCardThatDoesNotExist() {
+		CashCard unknownCard = new CashCard(null, 19.99, null);
+		HttpEntity<CashCard> request = new HttpEntity<>(unknownCard);
+
+		// Send a PUT request to update a non-existent CashCard and store the response
+		ResponseEntity<Void> response = restTemplate
+				.withBasicAuth("sarah1", "abc123")
+				.exchange("/cashcards/99999", HttpMethod.PUT, request, Void.class);
+
+		// Verify that the HTTP status code is 404 Not Found
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	/**
+	 * Test to verify that a CashCard owned by someone else cannot be updated.
+	 */
+	@Test
+	void shouldNotUpdateACashCardThatIsOwnedBySomeoneElse() {
+		CashCard kumarsCard = new CashCard(null, 888.88, null);
+		HttpEntity<CashCard> request = new HttpEntity<>(kumarsCard);
+
+		// Send a PUT request to update a CashCash owned by someone else and store the response
+		ResponseEntity<Void> response = restTemplate
+				.withBasicAuth("sarah1", "abc123")
+				.exchange("/cashcards/102", HttpMethod.PUT, request, Void.class);
+
+		// Verify that the HTTP status code is 404 Not Found
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 }
