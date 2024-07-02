@@ -297,4 +297,63 @@ class CashCardApplicationTests {
 		// Verify that the HTTP status code is 404 Not Found
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
+
+	/**
+	 * Test to verify that an existing CashCard can be deleted.
+	 */
+	@Test
+	@DirtiesContext
+	void shouldDeleteAnExistingCashCard() {
+		// Send a DELETE request to remove the CashCard with ID 99 and store the response
+		ResponseEntity<Void> response = restTemplate
+				.withBasicAuth("sarah1", "abc123")
+				.exchange("/cashcards/99", HttpMethod.DELETE, null, Void.class);
+
+		// Verify that the HTTP status code response is 204 No Content
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+		// Send a GET request to verify that the CashCard was successfully deleted
+		ResponseEntity<String> getResponse = restTemplate
+				.withBasicAuth("sarah1", "abc123")
+				.getForEntity("/cashcards/99", String.class);
+
+		// Verify that the HTTP status code response is 404 Not Found
+		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	/**
+	 * Test to verify that attempting to delete a non-existent CashCard returns 404 Not Found.
+	 */
+	@Test
+	void shouldNotDeleteACashCardThatDoesNotExist() {
+		// Send a DELETE request for a non-existent CashCard and store the response
+		ResponseEntity<Void> deleteResponse = restTemplate
+				.withBasicAuth("sarah1", "abc123")
+				.exchange("/cashcards/99999", HttpMethod.DELETE, null, Void.class);
+
+		// Verify that the HTTP status code response is 404 Not Found
+		assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	/**
+	 * Test to verify that a user cannot delete a CashCash they do not own.
+	 */
+	@Test
+	void shouldNotAllowDeletionOfCashCardTheyDoNotOwn() {
+		// Send a DELETE request for a CashCard not owned by the user and store the response
+		ResponseEntity<Void> deleteResponse = restTemplate
+				.withBasicAuth("sarah1", "abc123")
+				.exchange("/cashcards/102", HttpMethod.DELETE, null, Void.class);
+
+		// Verify that the HTTP status code response is 404 Not Found
+		assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+
+		// Send a GET request to verify that the CashCard still exists
+		ResponseEntity<String> getResponse = restTemplate
+				.withBasicAuth("kumar2", "xyz789")
+				.getForEntity("/cashcards/102", String.class);
+
+		// Verify that the HTTP status code response is 200 OK
+		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+	}
 }
