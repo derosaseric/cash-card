@@ -2,7 +2,7 @@
 
 ## Overview
 
-Welcome to the Family Cash Card application! This project aims to provide a modern solution for parents to manage allowance funds for their children. Instead of dealing with physical cash, our cloud-based application allows parents to virtually manage "cash cards" for their kids. Think of these cash cards as similar to gift cards, enabling parents to send, receive, and track allowances effortlessly.
+Welcome to the Family Cash Card application! This project aims to provide a modern solution for parents to manage allowance funds for their children. Instead of dealing with physical cash, this cloud-based application allows parents to virtually manage "cash cards" for their kids. Think of these cash cards as similar to gift cards, enabling parents to send, receive, and track allowances effortlessly.
 
 ## Project Description
 
@@ -67,13 +67,13 @@ Throughout the development of this project, the following key objectives were ac
 
 ## Usage
 
-- **API Endpoints:**
+### API Endpoints:
   - **Create a Cash Card:** `POST /api/cashcards`
   - **View Cash Cards:** `GET /api/cashcards`
   - **Edit a Cash Card:** `PUT /api/cashcards/{id}`
   - **Delete a Cash Card:** `DELETE /api/cashcards/{id}`
 
-- **Database Configuration:**
+### Database Configuration:
   - Configure your database settings in `src/main/resources/application.properties`.
 
 ## Contributing
@@ -81,7 +81,8 @@ Throughout the development of this project, the following key objectives were ac
 Please fork the repository and submit a pull request for any improvements or bug fixes.
 
 ## Acknowledgments
-- **Spring Academy** - For the course [Building a REST API with Spring Boot](https://spring.academy/courses/building-a-rest-api-with-spring-boot) that helped in developing this application.
+
+**Spring Academy** - For the course [Building a REST API with Spring Boot](https://spring.academy/courses/building-a-rest-api-with-spring-boot) that helped in developing this application.
 
 ## License
 
