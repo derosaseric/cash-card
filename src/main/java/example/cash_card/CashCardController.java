@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * REST controller for managing cash cards.
- * Provides an endpoint to create, retrieve by ID, update, and list cash cards.
+ * Provides an endpoint to create, retrieve by ID, update, delete, and list cash cards.
  */
 @RestController
 @RequestMapping("/cashcards")
@@ -122,6 +122,24 @@ public class CashCardController {
         if (cashCard != null) {
             CashCard updatedCashCard = new CashCard(cashCard.id(), cashCardUpdate.amount(), principal.getName());
             cashCardRepository.save(updatedCashCard);
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    /**
+     * Handles DELETE requests to delete a cash card by its ID.
+     * Ensures the cash card to be deleted belongs to the authenticated user.
+     *
+     * @param id the ID of the cash card to delete
+     * @param principal the authenticated user's principal
+     * @return ResponseEntity with no content if the deletion is successful, or a 404 Not Found status if not found
+     */
+    @DeleteMapping("/{id}")
+    private ResponseEntity<Void> deleteCashCard(@PathVariable Long id, Principal principal) {
+        if (cashCardRepository.existsByIdAndOwner(id, principal.getName())) {
+            cashCardRepository.deleteById(id);
             return ResponseEntity.noContent().build();
         }
 
